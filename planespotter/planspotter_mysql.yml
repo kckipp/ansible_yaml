@@ -6,10 +6,9 @@
  
 # {{variable}} --> run with -e key=value
 # host="Host to run playbook against"
+# mysql_root_password="This is your root password for MySQL database"
 
 - hosts: "{{ host }}"
-#  vars:
-#   mysql_root_password: "{{ mysql-root-password }}"
   tasks:
     - name: Update and Upgrade Apt
       apt:
@@ -34,8 +33,6 @@
         name: mysql
         state: started
         enabled: true
-#   - name: Print Ansible Hostname Output
-#     shell: /bin/echo "This is host:" "{{ ansible_hostname }}" "{{ ansible_host }}"
     - name: Set the MySQl root password
 #     sudo: yes
       mysql_user:
@@ -51,15 +48,15 @@
         - 127.0.0.1
         - ::1
         - localhost
-    - name: Clone Git Repo from Yves Fauser
-      git:
-        repo: 'https://github.com/yfauser/planespotter.git'
-        dest: ~/planespotter
+#    - name: Clone Git Repo from Yves Fauser
+         #git:
+         #repo: 'https://github.com/yfauser/planespotter.git'
+         #dest: ~/planespotter
 
      
  
   handlers:
-     - name: Restart NGINX
+     - name: Restart MYSQL
        service:
-         name: nginx
+         name: mysql
          state: restarted
