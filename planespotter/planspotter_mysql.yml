@@ -1,0 +1,65 @@
+---
+# YAML Playbook for MySQL Database creation on Ubuntu Distribution
+
+# Install a MySQL DB
+# Creates a DB with SQL for Flight Tracker
+ 
+# {{variable}} --> run with -e key=value
+# host="Host to run playbook against"
+
+- hosts: "{{ host }}"
+#  vars:
+#   mysql_root_password: "{{ mysql-root-password }}"
+  tasks:
+    - name: Update and Upgrade Apt
+      apt:
+        update_cache: yes
+        upgrade: yes
+        force_apt_get: yes
+#     sudo: yes
+    - name: Install MySQL Server - Unzip - Git
+      apt:
+        name: "{{ item }}"
+        state: present
+#     sudo: yes
+      with_items:
+        - mysql-server
+        - python-mysqldb
+        - mysql-client-core-5.7
+        - unzip
+        - git 
+    - name: Start the MySQL Service
+#     sudo: yes
+      service:
+        name: mysql
+        state: started
+        enabled: true
+#   - name: Print Ansible Hostname Output
+#     shell: /bin/echo "This is host:" "{{ ansible_hostname }}" "{{ ansible_host }}"
+    - name: Set the MySQl root password
+#     sudo: yes
+      mysql_user:
+        name: root
+        host: "{{ item }}"
+        password: "{{ mysql_root_password }}"
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        check_implicit_admin: yes
+        priv: "*.*:ALL,GRANT"
+      with_items:
+        - "{{ ansible_hostname }}"
+        - 127.0.0.1
+        - ::1
+        - localhost
+    - name: Clone Git Repo from Yves Fauser
+      git:
+        repo: 'https://github.com/yfauser/planespotter.git'
+        dest: ~/planespotter
+
+     
+ 
+  handlers:
+     - name: Restart NGINX
+       service:
+         name: nginx
+         state: restarted
