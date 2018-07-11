@@ -35,9 +35,10 @@
         enabled: true
     - name: Make MySQL available from everywhere
       lineinfile:
+        firstmatch: yes      
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
-        regexp: '^bind-address.*=.*127\.0\.0\.1'
-        insertbefore: '^#'
+        regexp: 'bind-address.*=.*127\.0\.0\.1'
+        line: '#bind-address = 127.0.0.1' 
       notify: Restart MYSQL
     - name: Set the MySQl root password
 #     sudo: yes
