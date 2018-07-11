@@ -2,13 +2,13 @@
 # YAML Playbook for MySQL Database creation on Ubuntu Distribution
 
 # Install a MySQL DB
-# Creates a DB with SQL for Flight Tracker
+# Creates a DB with SQL for Planspotter
  
 # {{variable}} --> run with -e key=value
-# host="Host to run playbook against"
+# hostdb="Databse host to run playbook against"
 # mysql_root_password="This is your root password for MySQL database"
 
-- hosts: "{{ host }}"
+- hosts: "{{ hostdb }}"
   tasks:
     - name: Update and Upgrade Apt
       apt:
@@ -33,6 +33,12 @@
         name: mysql
         state: started
         enabled: true
+    - name: Make MySQL available from everywhere
+      lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^bind-address.*=.*127\.0\.0\.1'
+        insertbefore: '^#'
+      notify: Restart MYSQL
     - name: Set the MySQl root password
 #     sudo: yes
       mysql_user:
